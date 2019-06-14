@@ -1,0 +1,659 @@
+use master
+go
+Create Database [<A_VARVANETS>_module_2]
+
+
+use [<A_VARVANETS>_module_2]
+go
+create schema [FK] AUTHORIZATION [dbo]
+go
+
+use [<A_VARVANETS>_module_2]
+go
+drop table if exists FK.clients
+go
+drop table if exists FK.bank_products
+go
+
+Create table FK.clients(
+Id integer NOT NULL primary key,
+Second_name  varchar (20) NOT NULL,
+First_name   varchar (20) NOT NULL,
+Surname      varchar (20) NOT NULL,
+Location     varchar (20) NOT NULL,
+Identification_code integer NOT NULL,
+Passport_series varchar (20) NOT NULL,
+Passport_number integer NOT NULL,
+Date_registration DATETIME,
+Updated_date DATETIME,
+Manager varchar (20) NOT NULL
+)
+go
+
+Create table FK.bank_products (
+Sequence_number integer NOT NULL primary key,
+Id  integer NOT NULL,
+Product_code integer NOT NULL,
+Product_name varchar (20) NOT NULL,
+Currency integer NOT NULL,
+Date_autorization DATETIME,
+Department_location_City varchar (20) NOT NULL,
+Department_location_Street varchar (20) NOT NULL,
+Manager varchar (20) NOT NULL,
+Constraint bank_products_FK  foreign key (Id) references FK.clients (Id)
+)
+go
+
+use [<A_VARVANETS>_module_2]
+go
+insert into [FK].[clients]
+([Id]
+,[Second_name]  
+,[First_name]
+,[Surname]
+,[Location]
+,[Identification_code]
+,[Passport_series]
+,[Passport_number]
+,[Date_registration] 
+,[Manager])
+values
+     (123,'Вербова','Галина','Михайлівна','Львів',1234567891,'KB',123456,'2019-05-23', 'Новак Ірина'),
+	 (124,'Галишич','Андрій','Петрович','Київ',1234567892,'KС',223456,'2019-05-23' ,'Новак Ірина'),
+	 (125,'Герасимович','Андрій','Володимирович','Львів',1234567893,'KВ',323456,'2019-05-23', 'Новак Ірина'),
+	 (126,'Гординяк','Назарій','Петрович','Львів',1234567894,'KС',523456,'2019-05-23', 'Новак Ірина'),
+	 (127,'Кузьма','Галина','Андріївна','Львів',1234567895,'KС',623456,'2019-05-23', 'Новак Ірина'),
+	 (128,'Гординяк','Назарій','Петрович','Львів',1234567896,'KС',723456,'2019-05-23', 'Новак Ірина'),
+	 (129,'Марців','Дмитро','Вікторович','Одеса',1234567897,'KС',823456,'2019-05-23', 'Новак Ірина'),
+	 (130,'Гординяк','Назарій','Петрович','Київ',1234567898,'KС',923456,'2019-05-23', 'Новак Ірина'),
+	 (131,'Околович','Уляна','Дмитрівна','Львів',1234567899,'KС',523410,'2019-05-23', 'Новак Ірина'),
+	 (132,'Гординяк','Вікторія','Данилівна','Львів',1234567810,'KС',523411,'2019-05-23', 'Новак Ірина')
+	
+go
+
+
+insert into [FK].[bank_products]
+([Sequence_number] 
+,[Id]
+,[Product_code]
+,[Product_name]
+,[Currency]
+,[Date_autorization]
+,[Department_location_City]
+,[Department_location_Street]
+,[Manager])
+       
+values
+ (1,123,1,'Депозит класичний',980,'2019-05-26','Львів','Зелена 10','Околович Уляна'),
+ (2,124,2,'Депозит класичний',840,'2019-05-26','Львів','Шевченка 55','Созоник Марія'),
+ (3,125,1,'Депозит класичний',980,'2019-05-26','Львів','Зелена 10','Околович Уляна'),
+ (4,126,3,'Депозит класичний',978,'2019-05-26','Львів','Зелена 10','Околович Уляна'),
+ (5,127,1,'Депозит класичний',980,'2019-05-26','Львів','Зелена 10','Околович Уляна'),
+ (6,128,4,'Депозит стартовий',980,'2019-05-26','Львів','Зелена 10','Околович Уляна'),
+ (7,129,5,'Депозит стартовий',840,'2019-05-26','Львів','Зелена 10','Околович Уляна'),
+ (8,130,6,'Депозит преміум',980,'2019-05-26','Львів','Зелена 10','Околович Уляна'),
+ (9,131,7,'Депозит преміум',840,'2019-05-26','Львів','Зелена 10','Околович Уляна'),
+ (10,132,1,'Депозит класичний',980,'2019-05-26','Львів','Зелена 10','Околович Уляна')
+go 
+	 
+	
+
+
+
+use [<A_VARVANETS>_module_2]
+go
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_Identifier on
+go
+
+create trigger tr_updated_date on  FK.clients 
+AFTER  Update 
+AS
+Begin
+SET NOCOUNT on;
+Declare @Identification_code INT
+SET @Identification_code = (Select Identification_code  From Inserted);
+
+Update FK.clients 
+Set updated_date = GETDATE()
+Where  Identification_code =@Identification_code;
+END
+GO
+
+
+update FK.clients
+set Second_name = 'Петренко'
+where Second_name = 'Околович'
+
+
+
+
+use [<A_VARVANETS>_module_2]
+go
+SELECT  [Id]
+,[Second_name]
+,[First_name] 
+,[Surname]      
+,[Location]     
+,[Identification_code] 
+,[Passport_series] 
+,[Passport_number]
+,[Date_registration] 
+,[Updated_date] 
+,[Manager] 
+FROM FK.clients
+
+use [<A_VARVANETS>_module_2]
+go
+
+create or alter view [dbo.bank_data_base]
+( [Id]
+,[Second_name]
+,[First_name] 
+,[Surname]      
+,[Location]     
+,[Identification_code] 
+,[Passport_series] 
+,[Passport_number]
+,[Date_registration] 
+,[Updated_date] 
+,[Manager varchar]
+)
+AS
+SELECT [Id]
+,[Second_name]
+,[First_name] 
+,[Surname]      
+,[Location]     
+,[Identification_code] 
+,[Passport_series] 
+,[Passport_number]
+,[Date_registration] 
+,[Updated_date] 
+,[Manager ]
+FROM FK.clients
+
+
+use [<A_VARVANETS>_module_2]
+go
+SELECT
+[Sequence_number]
+,[Id]  
+,[Product_code] 
+,[Product_name] 
+,[Currency] 
+,[Date_autorization] 
+,[Department_location_City] 
+,[Department_location_Street] 
+,[Manager] 
+FROM FK.bank_products
+
+
+
+
+
+use [<A_VARVANETS>_module_2]
+go
+
+create or alter view [dbo.bank_product]
+( [Sequence_number]
+,[Id]  
+,[Product_code] 
+,[Product_name] 
+,[Currency] 
+,[Date_autorization] 
+,[Department_location_City] 
+,[Department_location_Street] 
+,[Manager] 
+)
+AS
+SELECT  [Sequence_number]
+,[Id]  
+,[Product_code] 
+,[Product_name] 
+,[Currency] 
+,[Date_autorization] 
+,[Department_location_City] 
+,[Department_location_Street] 
+,[Manager] 
+FROM FK.bank_products
+
+
+
+
+use [<A_VARVANETS>_module_2]
+go
+
+create or alter view [dbo.bank_db]
+as
+Select
+[Id]
+ ,[Second_name]
+,[First_name] 
+,[Surname]      
+,[Location]     
+,[Identification_code] 
+,[Passport_series] 
+,[Passport_number]
+,[Date_registration] 
+,[Updated_date] 
+,[Manager]
+FROM FK.clients
+where [Location] = 'Львів'
+with CHECK OPTION
+
+
+
+
+
+
+use [<A_VARVANETS>_module_2]
+go
+
+create or alter view [dbo.product_db]
+as
+Select
+ [Sequence_number]
+,[Id]  
+,[Product_code] 
+,[Product_name] 
+,[Currency] 
+,[Date_autorization] 
+,[Department_location_City] 
+,[Department_location_Street] 
+,[Manager] 
+
+FROM FK.bank_products
+where [Product_name] = 'Депозит преміум'
+with CHECK OPTION
+
+
+
+
+use [<A_VARVANETS>_module_2]
+go
+create schema [<A_VARVANETS>_module_2] AUTHORIZATION [dbo]
+go
+
+
+use [<A_VARVANETS>_module_2]
+go
+
+create table [<A_VARVANETS>_module_2].bkproducts
+
+(
+Id int,
+Package_services  varchar (20),
+Currencies  varchar (20),
+Open_package  integer,
+Change_package  integer,
+Close_package integer,
+Non_cash_transactions_UAH varchar (20),
+Non_cash_transactions_USD varchar (20),
+Cash_withdrawal_UAH varchar (20),
+Cash_withdrawal_USD varchar (20),
+Cash_refill varchar (20),
+Non_cash_replenishment varchar (20), 
+Connection_SMS_banking varchar (20),
+Connection_internet_banking varchar (20),
+Making_card integer);
+
+
+
+create table [<A_VARVANETS>_module_2].audit_bkproducts
+(
+Id int ,
+Package_services  varchar (20),
+Currencies  varchar (20),
+Open_package  integer,
+Change_package  integer,
+Close_package integer,
+Non_cash_transactions_UAH varchar (20),
+Non_cash_transactions_USD varchar (20),
+Cash_withdrawal_UAH varchar (20),
+Cash_withdrawal_USD varchar (20),
+Cash_refill varchar (20),
+Non_cash_replenishment varchar (20), 
+Connection_SMS_banking varchar (20),
+Connection_internet_banking varchar (20),
+Making_card integer,
+ [operationtype]  char(1),
+ [Date of operation] DATETIME not null default GETDATE()
+);
+
+
+create trigger  trrg_bkproductsIUD on [<A_VARVANETS>_module_2].bkproducts
+After INSERT,UPDATE,DELETE
+AS
+BEGIN
+
+If @@ROWCOUNT = 0 RETURN
+DECLARE @operation char(1)
+DECLARE @ins int = (SELECT COUNT (*) from Inserted)
+DECLARE @del int = (SELECT COUNT (*) from DELETED)
+SET @operation = 
+case
+
+   when @ins>0 and @del > 0 then 'U'
+   when @ins=0 and @del > 0 then 'D'
+   when @ins>0 and @del = 0 then 'I'
+
+end
+
+
+IF @operation = 'I'
+begin
+   Insert into [<A_VARVANETS>_module_2].audit_bkproducts
+           (id,[Operationtype])
+   Select 
+          inserted.id, @operation
+From [<A_VARVANETS>_module_2].bkproducts
+inner join inserted on [<A_VARVANETS>_module_2].bkproducts.id=inserted.id
+end
+  
+
+   IF @operation = 'D'
+   begin
+   Insert into [<A_VARVANETS>_module_2].audit_bkproducts
+           (id, [Operationtype])
+   Select 
+          deleted.id, @operation
+	  
+   FROM deleted
+   end
+
+
+ IF @operation = 'U'
+ begin
+insert into [<A_VARVANETS>_module_2].audit_bkproducts
+ (id, [Operationtype])
+ select 
+ inserted.id, @operation
+ from [<A_VARVANETS>_module_2].bkproducts
+ inner join inserted on [<A_VARVANETS>_module_2].bkproducts.id=inserted.id
+ inner join deleted on [<A_VARVANETS>_module_2].bkproducts.id=deleted.id
+ end
+ end
+ go
+
+
+
+	 insert into [<A_VARVANETS>_module_2].bkproducts
+(      [id],
+ [Package_services],
+ [Currencies],
+ [Open_package],
+ [Change_package],
+ [Close_package],
+ [Non_cash_transactions_UAH],
+ [Non_cash_transactions_USD],
+ [Cash_withdrawal_UAH],
+ [Cash_withdrawal_USD],
+ [Cash_refill],
+ [Non_cash_replenishment], 
+ [Connection_SMS_banking],
+ [Connection_internet_banking],
+ [Making_card]
+)
+
+
+
+values
+(1,'BASED','UAH',10,10,50,'1%','not provided','1%','not provided','free','1%', 'free','free',50),
+(2,'IDEAL','UAH,USD',50,100,50,'1%','2,5%','0,75%','1%','free','1%', 'free','free',100),
+(3,'WHITHOUT_BORDERS','UAH,USD',50,100,50,'1%','2,5%','0,5%','0,5%','free','1%', 'free','free',100),
+(4,'ADVANTAGEOUS','UAH,USD',55,100,50,'1%','2,5%','0,5%','0,5%','free','1%', 'free','free',10)
+
+
+insert into [<A_VARVANETS>_module_2].audit_bkproducts
+( [id],
+ [Package_services],
+ [Currencies],
+ [Open_package],
+ [Change_package],
+ [Close_package],
+ [Non_cash_transactions_UAH],
+ [Non_cash_transactions_USD],
+ [Cash_withdrawal_UAH],
+ [Cash_withdrawal_USD],
+ [Cash_refill],
+ [Non_cash_replenishment], 
+ [Connection_SMS_banking],
+ [Connection_internet_banking],
+ [Making_card]
+)
+
+values
+ (1,'BASED','UAH',10,10,50,'1%','not provided','1%','not provided','free','1%', 'free','free',50),
+ (2,'IDEAL','UAH,USD',50,100,50,'1%','2,5%','0,75%','1%','free','1%', 'free','free',100),
+ (3,'WHITHOUT_BORDERS','UAH,USD',50,100,50,'1%','2,5%','0,5%','0,5%','free','1%', 'free','free',100),
+ (4,'ADVANTAGEOUS','UAH,USD',55,100,50,'1%','2,5%','0,5%','0,5%','free','1%', 'free','free',10)
+
+
+
+
+
+
+Delete from FK.clients where id=123
+
+Message: The DELETE statement conflicted with the REFERENCE constraint "bank_products_FK". The conflict occurred in database "<A_VARVANETS>_module_2", table "FK.bank_products", column 'Id'.
+
+
+Update FK.clients 
+set id=111
+where id=123
+
+
+
+use [<A_VARVANETS>_module_2]
+go
+insert into [FK].[clients]
+ ([Id]
+,[Second_name]  
+,[First_name]
+,[Surname]
+,[Location]
+,[Identification_code]
+,[Passport_series]
+,[Passport_number]
+,[Date_registration] 
+,[Manager])
+values
+ (222,'Петренко','Петро','Петрович','Львів',Null,'KB',222222,'2019-05-23', 'Новак Ірина')
+go
+
+
+
+
+
+use [<A_VARVANETS>_module_2]
+go
+insert into [FK].[clients]
+ ([Id]
+,[Second_name]  
+,[First_name]
+,[Surname]
+,[Location]
+,[Identification_code]
+,[Passport_series]
+,[Passport_number]
+,[Date_registration] 
+,[Manager])
+values
+(222,'Вербова','Галина','Михайлівна','Львів','Львів','KB',123456,'2019-05-23', 'Новак Ірина')
+
+Message: Conversion failed when converting the varchar value 'Львів' to data type int. Duplicate key value
+
+
+use [<A_VARVANETS>_module_2]
+go
+insert into [FK].[clients]
+ ([Id]
+,[Second_name]  
+,[First_name]
+,[Surname]
+,[Location]
+,[Identification_code]
+,[Passport_series]
+,[Passport_number]
+,[Date_registration] 
+,[Manager])
+values
+ (123,'Вербова','Галина','Михайлівна','Львів',1234567891,'KB',123456,'2019-05-23', 'Новак Ірина')
+
+
+
+use [<A_VARVANETS>_module_2]
+go
+insert into [FK].[clients]
+ ([Id]
+,[Second_name]  
+,[First_name]
+,[Surname]
+,[Location]
+,[Identification_code]
+,[Passport_series]
+,[Passport_number]
+,[Date_registration] 
+,[Manager])
+values
+ (133,'Мороз','Михайло','Петрович','Львів',1331331331,'KB',131313,'2019-05-23', 'Новак Ірина')
+go
+
+
+insert into [FK].[bank_products]
+([Sequence_number] 
+,[Id]
+,[Product_code]
+,[Product_name]
+,[Currency]
+,[Date_autorization]
+,[Department_location_City]
+,[Department_location_Street]
+,[Manager])
+       
+values
+ (11,133,1,'Депозит класичний',980,'2019-05-26','Львів','Зелена 10','Околович Уляна')
+go 
+	
+
+
+update [FK].[clients]
+set Second_name = 'Поспєлова'
+where Second_name = 'Мороз'
+
+
+delete from  [FK].[bank_products]
+where id=133
+
+delete from  [FK].[clients]
+where id=133
+
+
+
+insert into [<A_VARVANETS>_module_2].bkproducts
+( [id],
+ [Package_services],
+ [Currencies],
+ [Open_package],
+ [Change_package],
+ [Close_package],
+ [Non_cash_transactions_UAH],
+ [Non_cash_transactions_USD],
+ [Cash_withdrawal_UAH],
+ [Cash_withdrawal_USD],
+ [Cash_refill],
+ [Non_cash_replenishment], 
+ [Connection_SMS_banking],
+ [Connection_internet_banking],
+ [Making_card]
+)
+
+values
+     (6,'Holiday','UAH',10,10,50,'1%','not provided','1%','not provided','free','1%', 'free','free',50)
+
+
+	
+insert into [<A_VARVANETS>_module_2].audit_bkproducts
+( [id],
+  [Package_services],
+  [Currencies],
+  [Open_package],
+  [Change_package],
+  [Close_package],
+ [Non_cash_transactions_UAH],
+ [Non_cash_transactions_USD],
+ [Cash_withdrawal_UAH],
+ [Cash_withdrawal_USD],
+ [Cash_refill],
+ [Non_cash_replenishment], 
+ [Connection_SMS_banking],
+ [Connection_internet_banking],
+ [Making_card]
+)
+
+values
+ (6,'Holiday','UAH',10,10,50,'1%','not provided','1%','not provided','free','1%', 'free','free',50)
+
+
+
+  update [<A_VARVANETS>_module_2].bkproducts
+set [Package_services] = 'STANDART'
+where id = 6
+
+update [<A_VARVANETS>_module_2].audit_bkproducts
+set [Package_services] = 'STANDART'
+where id = 6
+
+
+
+delete from  [<A_VARVANETS>_module_2].bkproducts
+	  	  where id = 6
+
+delete from [<A_VARVANETS>_module_2].audit_bkproducts
+	 	  where id = 6
+
+
+
+use master
+go
+Create Database [education]
+
+use [education]  
+go
+create schema [<A_VARVANETS>_module_2] AUTHORIZATION [dbo]   
+go
+
+use education
+go
+
+create synonym  [FK.clients]   for [<A_VARVANETS>_module_2].[FK.clients]
+
+create synonym  [FK.bank_products]   for [<A_VARVANETS>_module_2].[FK.bank_products]
+
+create synonym  [<A_VARVANETS>_module_2].[bkproducts]   for [<A_VARVANETS>_module_2].[<A_VARVANETS>_module_2].[bkproducts]
+
+create synonym  [<A_VARVANETS>_module_2].[audit_bkproducts]   for [<A_VARVANETS>_module_2].[<A_VARVANETS>_module_2].[audit_bkproducts]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
